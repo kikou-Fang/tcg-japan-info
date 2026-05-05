@@ -1,0 +1,126 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum MembershipTier {
+  FREE
+  PREMIUM
+}
+
+enum TCGTitle {
+  POKEMON
+  YUGIOH
+  ONE_PIECE
+  MTG
+  DRAGON_BALL
+  WEISS_SCHWARZ
+  OTHER
+}
+
+model User {
+  id            String         @id @default(cuid())
+  email         String         @unique
+  name          String?
+  passwordHash  String?
+  membership    MembershipTier @default(FREE)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  favorites     Favorite[]
+  alerts        Alert[]
+  sessions      Session[]
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  userId       String
+  token        String   @unique
+  expiresAt    DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Product {
+  id            String      @id @default(cuid())
+  title         String
+  titleEn       String?
+  tcgTitle      TCGTitle
+  releaseDate   DateTime?
+  imageUrl      String?
+  description   String?
+  janCode       String?
+  officialPrice Int?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  prices        Price[]
+  favorites     Favorite[]
+  alerts        Alert[]
+
+  @@index([tcgTitle])
+  @@index([releaseDate])
+}
+
+model Shop {
+  id        String   @id @default(cuid())
+  name      String
+  url       String
+  logoUrl   String?
+  isOnline  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  prices    Price[]
+}
+
+model Price {
+  id        String   @id @default(cuid())
+  productId String
+  shopId    String
+  price     Int
+  inStock   Boolean  @default(true)
+  url       String?
+  scrapedAt DateTime @default(now())
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  shop      Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
+
+  @@index([productId, scrapedAt])
+  @@index([shopId])
+}
+
+model Favorite {
+  id        String   @id @default(cuid())
+  userId    String
+  productId String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+}
+
+model Alert {
+  id          String   @id @default(cuid())
+  userId      String
+  productId   String?
+  tcgTitle    TCGTitle?
+  targetPrice Int?
+  notifyStock Boolean  @default(false)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product     Product? @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model NewsItem {
+  id          String   @id @default(cuid())
+  title       String
+  content     String
+  tcgTitle    TCGTitle?
+  sourceUrl   String?
+  publishedAt DateTime @default(now())
+  isPremium   Boolean  @default(false)
+
+  @@index([publishedAt])
+  @@index([tcgTitle])
+}
