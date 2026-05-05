@@ -1,36 +1,84 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TCG Japan Info
 
-## Getting Started
+日本TCG（トレーディングカードゲーム）販売情報の完全ガイドサイト。ポケモン・遊戯王・ワンピース・MTGなど主要TCGの価格比較・在庫情報・発売日を一元管理。
 
-First, run the development server:
+## 🎯 プロジェクトの目的
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- 日本TCGの販売情報を一元化
+- 情報格差をなくし、誰でも公平に最新情報にアクセス
+- カスタムアラート・お気に入り機能でパーソナライズ
+- 毎日最新情報を更新
+
+## ✨ 会員レベル別機能
+
+| 機能 | 非会員 | 無料会員 | プレミアム |
+|------|:------:|:-------:|:----------:|
+| 商品閲覧 | ✓ | ✓ | ✓ |
+| 価格比較 | 上位3件 | 上位10件 | 全件 |
+| リアルタイム情報 | 3日遅れ | ✓ | ✓ |
+| カスタムアラート | × | 3件 | 無制限 |
+| お気に入り | × | 10件 | 無制限 |
+| 価格推移グラフ | × | 1ヶ月 | 全期間 |
+| 在庫復活通知 | × | × | ✓ |
+| CSV/APIエクスポート | × | × | ✓ |
+
+プレミアム: 月額 ¥980
+
+## 🛠 技術スタック
+
+- **フレームワーク**: Next.js 15 (App Router)
+- **言語**: TypeScript
+- **スタイル**: Tailwind CSS v4
+- **DB**: PostgreSQL (Prisma ORM)
+- **認証**: NextAuth.js
+- **デプロイ**: Railway
+
+## 📁 ディレクトリ構造
+
+```
+tcg-site/
+├── src/
+│   ├── app/              # ページ (App Router)
+│   ├── components/       # UIコンポーネント
+│   └── lib/              # ユーティリティ・モックデータ
+├── prisma/
+│   └── schema.prisma     # DBスキーマ
+└── public/               # 静的アセット
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🚀 セットアップ
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+git clone https://github.com/kikou-Fang/tcg-japan-info.git
+cd tcg-japan-info
+npm install
+cp .env.example .env       # DB接続情報を設定
+npx prisma generate
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+http://localhost:3000 でアクセス
 
-## Learn More
+## 🌐 Railway デプロイ
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+railway login
+railway init
+railway up
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+または GitHub 連携で自動デプロイ:
+1. https://railway.com/new で New Project
+2. "Deploy from GitHub repo" → `kikou-Fang/tcg-japan-info` を選択
+3. PostgreSQL プラグインを追加
+4. 環境変数 `DATABASE_URL` を自動接続
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 📊 主要データモデル
 
-## Deploy on Vercel
+`User` / `Product` / `Shop` / `Price` / `Favorite` / `Alert` / `NewsItem`
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+詳細は `prisma/schema.prisma` 参照
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 📝 ライセンス
+
+MIT
